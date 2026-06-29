@@ -3,31 +3,29 @@ version: 0.2
 phases:
   pre_build:
     commands:
-      - echo "Moving into Spring Boot project directory..."
-      - cd aws-cicd-main/aws-cicd-main
+      - echo "Logging into Amazon ECR..."
 
-      - echo "Project directory:"
-      - pwd
-      - ls
+      - export AWS_ACCOUNT_ID=428185450921
+      - export REPOSITORY_URI=$AWS_ACCOUNT_ID.dkr.ecr.ap-south-1.amazonaws.com/javatechie-registry
 
-      - echo "Building Maven project (only this module)..."
-      - mvn clean install -DskipTests
-
-      - echo "Logging in to Amazon ECR..."
-      - export REPOSITORY_URI=339713037827.dkr.ecr.ap-south-1.amazonaws.com/javatechie-registry
       - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin $REPOSITORY_URI
 
       - export IMAGE_TAG=build-$(echo $CODEBUILD_BUILD_ID | awk -F":" '{print $2}')
 
   build:
     commands:
+      - echo "Building Maven project..."
+      - mvn clean install -DskipTests
+
       - echo "Building Docker image..."
       - docker build -t $REPOSITORY_URI:latest .
+
       - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
 
   post_build:
     commands:
-      - echo "Pushing Docker images..."
+      - echo "Pushing Docker images to ECR..."
+
       - docker push $REPOSITORY_URI:latest
       - docker push $REPOSITORY_URI:$IMAGE_TAG
 
@@ -37,4 +35,4 @@ phases:
 artifacts:
   files:
     - imagedefinitions.json
-    - aws-cicd-main/aws-cicd-main/target/*.jar
+    - target/*.jar
