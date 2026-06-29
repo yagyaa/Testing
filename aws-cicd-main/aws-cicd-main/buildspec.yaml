@@ -3,33 +3,51 @@ version: 0.2
 phases:
   pre_build:
     commands:
+      - echo "Changing to project directory..."
       - cd aws-cicd-main/aws-cicd-main
+
+      - echo "Building Maven project..."
       - mvn clean install
-      - echo Logging in to Amazon ECR...
+
+      - echo "Logging in to Amazon ECR..."
       - aws --version
-      - REPOSITORY_URI=339713037827.dkr.ecr.ap-south-1.amazonaws.com/javatechie-registry
+
+      - export REPOSITORY_URI=339713037827.dkr.ecr.ap-south-1.amazonaws.com/javatechie-registry
+
       - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin $REPOSITORY_URI
-      - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
-      - IMAGE_TAG=build-$(echo $CODEBUILD_BUILD_ID | awk -F":" '{print $2}')
+
+      - export COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - export IMAGE_TAG=build-$(echo $CODEBUILD_BUILD_ID | awk -F":" '{print $2}')
 
   build:
     commands:
-      - echo Build started on `date`
-      - echo Building the Docker image...
+      - echo "Changing to project directory..."
+      - cd aws-cicd-main/aws-cicd-main
+
+      - echo "Build started on $(date)"
+
       - docker build -t $REPOSITORY_URI:latest .
+
       - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
 
   post_build:
     commands:
-      - echo Build completed on `date`
-      - echo Pushing the Docker images...
+      - echo "Changing to project directory..."
+      - cd aws-cicd-main/aws-cicd-main
+
+      - echo "Build completed on $(date)"
+
       - docker push $REPOSITORY_URI:latest
       - docker push $REPOSITORY_URI:$IMAGE_TAG
-      - DOCKER_CONTAINER_NAME=javatechie-registry
+
+      - export DOCKER_CONTAINER_NAME=javatechie-registry
+
       - printf '[{"name":"%s","imageUri":"%s"}]' $DOCKER_CONTAINER_NAME $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+
       - cat imagedefinitions.json
 
 artifacts:
+  base-directory: aws-cicd-main/aws-cicd-main
   files:
     - imagedefinitions.json
     - target/course-service.jar
