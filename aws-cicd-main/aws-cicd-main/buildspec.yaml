@@ -3,35 +3,38 @@ version: 0.2
 phases:
   pre_build:
     commands:
-      - echo "Current directory:"
+      - echo "Moving into Spring Boot project directory..."
+      - cd aws-cicd-main/aws-cicd-main
+
+      - echo "Project directory:"
       - pwd
-      - echo "Listing files:"
-      - ls -R
+      - ls
 
-      - echo "Going to project folder safely..."
-      - cd aws-cicd-main || cd .
+      - echo "Building Maven project (only this module)..."
+      - mvn clean install -DskipTests
 
-      - mvn clean install
-
+      - echo "Logging in to Amazon ECR..."
       - export REPOSITORY_URI=339713037827.dkr.ecr.ap-south-1.amazonaws.com/javatechie-registry
-
       - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin $REPOSITORY_URI
 
       - export IMAGE_TAG=build-$(echo $CODEBUILD_BUILD_ID | awk -F":" '{print $2}')
 
   build:
     commands:
+      - echo "Building Docker image..."
       - docker build -t $REPOSITORY_URI:latest .
       - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
 
   post_build:
     commands:
+      - echo "Pushing Docker images..."
       - docker push $REPOSITORY_URI:latest
       - docker push $REPOSITORY_URI:$IMAGE_TAG
 
+      - echo "Creating imagedefinitions.json..."
       - printf '[{"name":"javatechie-registry","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
 
 artifacts:
   files:
     - imagedefinitions.json
-    - target/*.jar
+    - aws-cicd-main/aws-cicd-main/target/*.jar
