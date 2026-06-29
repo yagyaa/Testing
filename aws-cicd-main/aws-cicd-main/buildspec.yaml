@@ -14,25 +14,25 @@ phases:
 
   build:
     commands:
+      - echo "Moving to correct project directory..."
+      - cd aws-cicd-main/aws-cicd-main
+
       - echo "Building Maven project..."
       - mvn clean install -DskipTests
 
       - echo "Building Docker image..."
       - docker build -t $REPOSITORY_URI:latest .
-
       - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
 
   post_build:
     commands:
-      - echo "Pushing Docker images to ECR..."
-
+      - echo "Pushing Docker images..."
       - docker push $REPOSITORY_URI:latest
       - docker push $REPOSITORY_URI:$IMAGE_TAG
 
-      - echo "Creating imagedefinitions.json..."
       - printf '[{"name":"javatechie-registry","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
 
 artifacts:
   files:
     - imagedefinitions.json
-    - target/*.jar
+    - aws-cicd-main/aws-cicd-main/target/*.jar
