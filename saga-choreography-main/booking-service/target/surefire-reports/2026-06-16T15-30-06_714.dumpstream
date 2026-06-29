@@ -1,0 +1,5 @@
+# Created at 2026-06-16T15:30:07.113
+Boot Manifest-JAR contains absolute paths in classpath 'D:\Microservices_Code\saga-choreography-main\booking-service\target\test-classes'
+Hint: <argLine>-Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
+'other' has different root
+

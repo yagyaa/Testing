@@ -1,0 +1,5 @@
+package com.javatechie.events;
+
+import java.util.List;
+
+public record SeatReservedEvent(String bookingId, String showId, List<String> seatIds, boolean reserved, long amount) {}

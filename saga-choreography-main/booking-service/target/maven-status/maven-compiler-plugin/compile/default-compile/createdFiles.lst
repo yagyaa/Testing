@@ -1,0 +1,10 @@
+com\javatechie\utils\mapper\EntityToBookingResponseMapper.class
+com\javatechie\controller\BookingController.class
+com\javatechie\messaging\BookingEventProducer.class
+com\javatechie\repository\BookingRepository.class
+com\javatechie\ReservationServiceApplication.class
+com\javatechie\service\BookingService.class
+com\javatechie\MovieBookingListener.class
+com\javatechie\utils\mapper\BookingRequestToEntityMapper.class
+com\javatechie\config\KafkaConfig.class
+com\javatechie\entity\Booking.class

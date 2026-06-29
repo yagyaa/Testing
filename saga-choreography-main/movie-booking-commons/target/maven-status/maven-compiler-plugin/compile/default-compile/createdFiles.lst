@@ -1,0 +1,6 @@
+com\javatechie\common\KafkaConfigProperties.class
+com\javatechie\events\BookingCreatedEvent.class
+com\javatechie\events\BookingPaymentEvent.class
+com\javatechie\request\BookingRequest.class
+com\javatechie\events\SeatReservedEvent.class
+com\javatechie\response\BookingResponse.class

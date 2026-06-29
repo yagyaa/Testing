@@ -1,0 +1,5 @@
+# Created at 2026-06-29T17:43:24.827
+Boot Manifest-JAR contains absolute paths in classpath 'D:\Microservices_Code\aws-cicd-main\aws-cicd-main\target\test-classes'
+Hint: <argLine>-Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
+'other' has different root
+
