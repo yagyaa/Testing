@@ -30,7 +30,8 @@ phases:
       - docker push $REPOSITORY_URI:latest
       - docker push $REPOSITORY_URI:$IMAGE_TAG
 
-      - printf '[{"name":"javatechie-registry","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+      - cd $CODEBUILD_SRC_DIR
+      - printf '[{"name":"javatechie-registry","imageUri":"%s"}]' "$REPOSITORY_URI:$IMAGE_TAG" > imagedefinitions.json
 
 artifacts:
   files:
